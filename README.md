@@ -1,41 +1,244 @@
-# VoyageAgent MVP
+# 🌍 VoyageAgent
 
-VoyageAgent is a lightweight multi-agent travel planner built with the current FastAPI + static HTML stack.
+### Multi-Agent AI Travel Planner Powered by MCP Tools
 
-## What Is Implemented
+> **Plan smarter. Travel better. Adapt instantly.**
+>
+> VoyageAgent is an intelligent multi-agent travel planning system that combines real-time weather, local events, attractions, budgeting, travel advisories, and automated notifications into a single AI-powered travel experience.
 
-- Context Agent: calls MCP tools for weather, events, places, and travel advisory data.
-- Planner Agent: creates the day-by-day itinerary for the exact selected destination city.
-- Experience Agent: adds preference and weather-aware activity notes.
-- Budget Agent: calculates hotel, food, transport, activity, and buffer budgets and keeps the total near the user budget.
-- Notification Agent: sends itinerary emails with Gmail SMTP and includes a simple periodic advisory monitor.
-- MCP Tool Layer: registered tool schemas, structured responses, tool call logging, and tool response logging.
+---
 
-## Files
+## ✨ Why VoyageAgent?
+
+Traditional travel planners generate static itineraries.
+
+**VoyageAgent creates living travel plans.**
+
+Instead of relying on a single AI workflow, VoyageAgent uses a team of specialized agents that collaborate to:
+
+* Understand destination context
+* Analyze weather conditions
+* Discover local attractions and events
+* Optimize spending
+* Personalize activities
+* Monitor travel risks
+* Send proactive travel updates
+
+The result is a travel itinerary that feels like it was prepared by an entire travel agency rather than a single application.
+
+---
+
+# 🧠 Multi-Agent Architecture
 
 ```text
-backend/app.py                 FastAPI routes, logging, email task, monitoring loop
-backend/agents.py              VoyageAgent orchestrator
-backend/context_agent.py       MCP context collection
-backend/planner_agent.py       Itinerary creation
-backend/budget_agent.py        Budget calculation and enforcement
-backend/experience_agent.py    Preference/weather enhancements
-backend/notification_agent.py  Gmail itinerary and warning emails
-backend/tools.py               MCP-style tool registry and API clients
-backend/schemas.py             Request/response models
-backend/config.py              Environment variable settings
-static/index.html              Basic frontend
-.env.example                   API key template
+                    ┌─────────────────┐
+                    │   User Request  │
+                    └────────┬────────┘
+                             │
+                             ▼
+                 ┌─────────────────────┐
+                 │   Voyage Orchestrator │
+                 └────────┬────────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        ▼                 ▼                 ▼
+
+ ┌────────────┐   ┌────────────┐   ┌──────────────┐
+ │ Context    │   │ Planner    │   │ Experience   │
+ │ Agent      │   │ Agent      │   │ Agent        │
+ └─────┬──────┘   └─────┬──────┘   └─────┬────────┘
+       │                │                │
+       ▼                ▼                ▼
+
+ Weather        Day-by-Day Plan    Personalized
+ Events         Route Building     Recommendations
+ Places          Scheduling        Weather Awareness
+
+        ┌─────────────────┐
+        ▼                 ▼
+
+ ┌────────────┐   ┌─────────────────┐
+ │ Budget     │   │ Notification    │
+ │ Agent      │   │ Agent           │
+ └────────────┘   └─────────────────┘
+
+ Cost Optimization   Email Alerts
+ Budget Enforcement  Travel Warnings
 ```
 
-## Exact Commands
+---
+
+# 🚀 Core Capabilities
+
+## 🌦 Context Agent
+
+Collects real-world travel intelligence using MCP tools.
+
+### Data Sources
+
+* Weather forecasts
+* Local events
+* Tourist attractions
+* Restaurants
+* Museums
+* Landmarks
+* Travel advisories
+
+### Purpose
+
+Before planning begins, VoyageAgent understands what's happening in the destination city.
+
+---
+
+## 🗺 Planner Agent
+
+Generates the complete itinerary.
+
+### Responsibilities
+
+* Day-by-day planning
+* Attraction sequencing
+* Activity distribution
+* Trip structure optimization
+
+Every generated plan is tailored specifically to the selected destination and travel dates.
+
+---
+
+## 🎯 Experience Agent
+
+Adds personalization and context awareness.
+
+### Enhancements
+
+* Weather-aware suggestions
+* Preference-based recommendations
+* Activity tips
+* Local experience improvements
+
+Example:
+
+Instead of simply recommending a park visit, the agent can suggest indoor alternatives when rain is expected.
+
+---
+
+## 💰 Budget Agent
+
+Keeps travel costs realistic.
+
+### Cost Categories
+
+| Category   | Included                |
+| ---------- | ----------------------- |
+| Hotel      | Accommodation estimates |
+| Food       | Daily meal budget       |
+| Transport  | Local transportation    |
+| Activities | Attractions & events    |
+| Buffer     | Emergency reserve       |
+
+### Goal
+
+Maintain a travel plan that remains as close as possible to the user-defined budget.
+
+---
+
+## 📬 Notification Agent
+
+Provides continuous travel awareness.
+
+### Features
+
+* Itinerary email delivery
+* Travel warning notifications
+* Periodic destination monitoring
+* Automated advisory alerts
+
+Users receive updates even after the itinerary has been generated.
+
+---
+
+# 🔧 MCP Tool Ecosystem
+
+VoyageAgent follows an MCP-inspired tool architecture.
+
+### Registered Tool Categories
+
+| Tool        | Purpose                        |
+| ----------- | ------------------------------ |
+| Weather     | Forecast retrieval             |
+| Events      | Ticketmaster integration       |
+| Attractions | Activity discovery             |
+| Places      | Geoapify location intelligence |
+| Advisory    | Risk monitoring                |
+| Email       | Notification delivery          |
+
+### Additional Features
+
+* Structured tool schemas
+* Tool-call logging
+* Response logging
+* Error handling
+* Configuration validation
+
+---
+
+# 📁 Project Structure
+
+```text
+VoyageAgent/
+│
+├── backend/
+│   ├── app.py
+│   ├── agents.py
+│   ├── context_agent.py
+│   ├── planner_agent.py
+│   ├── budget_agent.py
+│   ├── experience_agent.py
+│   ├── notification_agent.py
+│   ├── tools.py
+│   ├── schemas.py
+│   └── config.py
+│
+├── static/
+│   └── index.html
+│
+├── .env.example
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Installation
+
+## 1. Clone Repository
 
 ```powershell
-cd c:\AAi
+git clone <repository-url>
+cd VoyageAgent
+```
+
+## 2. Activate Environment
+
+```powershell
 .\.venv\Scripts\Activate.ps1
+```
+
+## 3. Install Dependencies
+
+```powershell
 python -m pip install -r backend\requirements.txt
+```
+
+## 4. Start Server
+
+```powershell
 uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
 ```
+
+---
+
+# 🌐 Launch Application
 
 Open:
 
@@ -43,42 +246,93 @@ Open:
 http://127.0.0.1:8000
 ```
 
-## API Keys
+---
 
-Copy the template:
+# 🔑 Environment Configuration
+
+Create configuration file:
 
 ```powershell
 Copy-Item .env.example .env
 notepad .env
 ```
 
-Put keys exactly here:
+Add credentials:
 
-```text
-OPENWEATHER_API_KEY=your_openweather_key
-TICKETMASTER_API_KEY=your_ticketmaster_key
-GEOAPIFY_API_KEY=your_geoapify_key
-NEWS_API_KEY=your_newsapi_key
-EMAIL_USER=yourgmail@gmail.com
-EMAIL_PASS=your_gmail_app_password
-LLM_API_KEY=your_openai_api_key
+```env
+OPENWEATHER_API_KEY=
+TICKETMASTER_API_KEY=
+GEOAPIFY_API_KEY=
+NEWS_API_KEY=
+
+EMAIL_USER=
+EMAIL_PASS=
+
+LLM_API_KEY=
 LLM_MODEL=gpt-4o-mini
 ```
 
-Without API keys, tools return clear `not-configured` responses instead of fake city data.
+---
 
-## Live Tool Behavior
+# 🌎 Real-Time Data Integrations
 
-- Weather: OpenWeatherMap forecast for the submitted destination city.
-- Events: Ticketmaster events for the submitted destination city and selected date range.
-- Ticketmaster Attractions: Ticketmaster artists, sports teams, packages, and plays from `/discovery/v2/attractions.json`.
-- Places: Geoapify geocodes the submitted destination city, then fetches tourist attractions, museums, landmarks, and restaurants nearby.
-- Travel Advisory: NewsAPI scan for wars, disasters, storms, extreme weather, warnings, and airport shutdowns.
-- Email: Gmail SMTP sends the itinerary and later warning emails if monitoring detects danger.
+## OpenWeather
 
-For Gmail, enable 2-Step Verification on the Gmail account, create an App Password, and use that App Password as `EMAIL_PASS`. Do not use your normal Gmail password.
+Provides destination forecasts.
 
-## Quick API Test
+### Used For
+
+* Weather awareness
+* Activity recommendations
+* Planning optimization
+
+---
+
+## Ticketmaster
+
+Provides live event discovery.
+
+### Includes
+
+* Concerts
+* Sports events
+* Theatre shows
+* Attractions
+* Entertainment packages
+
+---
+
+## Geoapify
+
+Provides geographic intelligence.
+
+### Includes
+
+* Museums
+* Restaurants
+* Tourist attractions
+* Landmarks
+* City exploration
+
+---
+
+## NewsAPI
+
+Monitors destination risks.
+
+### Detects
+
+* Severe weather
+* Natural disasters
+* Airport closures
+* Safety advisories
+* Major disruptions
+
+---
+
+# 📡 API Testing
+
+## Generate Travel Plan
 
 ```powershell
 $body = @{
@@ -91,17 +345,83 @@ $body = @{
   email = $null
 } | ConvertTo-Json
 
-Invoke-RestMethod http://127.0.0.1:8000/api/plan -Method Post -ContentType "application/json" -Body $body
+Invoke-RestMethod `
+http://127.0.0.1:8000/api/plan `
+-Method Post `
+-ContentType "application/json" `
+-Body $body
 ```
 
-Tool registry:
+---
+
+## View Registered Tools
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/api/tools
 ```
 
-## Notes
+---
 
-- Use a city like `Bergen`, `Oslo`, `Paris`, or `Tokyo`, not only a country, because event and places APIs work best with city names.
-- Logs show selected city validation, MCP tool calls, MCP responses, and agent execution order.
-- The monitor is deliberately simple: it runs inside the FastAPI process every hour for trips with an email address.
+# 📈 System Observability
+
+VoyageAgent provides transparent execution logging.
+
+### Logged Operations
+
+* Agent execution order
+* Tool invocations
+* Tool responses
+* City validation
+* Monitoring actions
+* Notification delivery
+
+This makes debugging and agent analysis significantly easier during development.
+
+---
+
+# 🛡 Fail-Safe Design
+
+Missing API credentials never produce fabricated travel information.
+
+Instead, VoyageAgent returns explicit:
+
+```text
+not-configured
+```
+
+responses, ensuring transparency and predictable behavior.
+
+---
+
+# 🔮 Future Roadmap
+
+* Memory-enabled traveler profiles
+* Multi-city trip planning
+* Flight integration
+* Hotel booking integration
+* Interactive travel maps
+* Agent-to-agent reasoning traces
+* Autonomous itinerary refinement
+* Real-time travel disruption recovery
+
+---
+
+# 🏆 Built With
+
+* FastAPI
+* Python
+* MCP-style Tool Architecture
+* OpenAI Models
+* OpenWeather API
+* Ticketmaster API
+* Geoapify API
+* NewsAPI
+* Gmail SMTP
+
+---
+
+## The Vision
+
+VoyageAgent is not just a travel planner.
+
+It is an early step toward autonomous travel intelligence systems where specialized AI agents collaborate, reason, monitor, and adapt in real time to create personalized travel experiences.
