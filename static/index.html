@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoyageAgent MVP</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #5c667a;
+        --line: #d8dee9;
+        --surface: #f5f7fb;
+        --accent: #0f766e;
+        --accent-dark: #115e59;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        color: var(--ink);
+        background: #ffffff;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 24px auto 48px;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 6vw, 3.2rem);
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+
+      form,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        background: #fff;
+      }
+
+      label {
+        display: block;
+        margin: 12px 0 5px;
+        font-weight: 700;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #b8c1d1;
+        border-radius: 6px;
+        font-size: 1rem;
+      }
+
+      textarea {
+        resize: vertical;
+      }
+
+      button {
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 16px;
+        margin-top: 16px;
+        color: #fff;
+        background: var(--accent);
+        border: 0;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: var(--accent-dark);
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: wait;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .metric {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: var(--surface);
+      }
+
+      .metric strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .day {
+        border-top: 1px solid var(--line);
+        padding: 16px 0;
+      }
+
+      .day ul,
+      .trace {
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+
+      .empty {
+        min-height: 220px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px dashed #b8c1d1;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      details {
+        margin-top: 12px;
+      }
+
+      pre {
+        background: #101828;
+        color: #edf2f7;
+        padding: 14px;
+        border-radius: 8px;
+        overflow: auto;
+        font-size: 0.88rem;
+      }
+
+      @media (max-width: 860px) {
+        .layout,
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>VoyageAgent</h1>
+        <p>
+          A compact multi-agent travel advisor using Planner, Budget,
+          Experience, and MCP-style Context agents.
+        </p>
+      </header>
+
+      <section class="layout">
+        <form id="trip-form">
+          <h2>Trip Request</h2>
+
+          <label for="destination">Destination</label>
+          <input id="destination" name="destination" required value="Paris" />
+
+          <label for="start_date">Start date</label>
+          <input id="start_date" name="start_date" type="date" required />
+
+          <label for="end_date">End date</label>
+          <input id="end_date" name="end_date" type="date" required />
+
+          <label for="budget">Budget in USD</label>
+          <input id="budget" name="budget" type="number" min="0" placeholder="Example: 900" />
+
+          <label for="preferences">Preferences</label>
+          <textarea
+            id="preferences"
+            name="preferences"
+            rows="4"
+            placeholder="food, culture, museums, outdoor activities"
+          ></textarea>
+
+          <label for="email">Email itinerary</label>
+          <input id="email" name="email" type="email" placeholder="optional@example.com" />
+
+          <button id="submit-button" type="submit">PLAN MY TRIP</button>
+        </form>
+
+        <section class="panel" id="output">
+          <div class="empty">
+            Submit a trip request to generate a live itinerary response.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById("trip-form");
+      const output = document.getElementById("output");
+      const submitButton = document.getElementById("submit-button");
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const dayAfter = new Date(today);
+      dayAfter.setDate(today.getDate() + 3);
+      form.start_date.value = tomorrow.toISOString().slice(0, 10);
+      form.end_date.value = dayAfter.toISOString().slice(0, 10);
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        output.innerHTML = '<div class="empty">Generating itinerary...</div>';
+
+        const body = {
+          destination: form.destination.value.trim(),
+          start_date: form.start_date.value,
+          end_date: form.end_date.value,
+          duration_days: calculateDays(form.start_date.value, form.end_date.value),
+          budget: form.budget.value ? Number(form.budget.value) : null,
+          email: form.email.value.trim() || null,
+          preferences: form.preferences.value.trim(),
+        };
+
+        try {
+          const response = await fetch("/api/plan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            output.innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+            return;
+          }
+
+          output.innerHTML = renderPlan(data);
+        } catch (error) {
+          output.innerHTML = `<pre>${escapeHtml(error.message)}</pre>`;
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      function renderPlan(plan) {
+        const days = plan.days
+          .map(
+            (day) => `
+              <article class="day">
+                <h3>Day ${day.day}: ${escapeHtml(day.summary)}</h3>
+                <ul>${day.activities.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+              </article>
+            `
+          )
+          .join("");
+
+        return `
+          <h2>${escapeHtml(plan.title)}</h2>
+          <div class="summary-grid">
+            <div class="metric"><strong>Length</strong>${plan.trip_length_days} days</div>
+            <div class="metric"><strong>Budget</strong>$${Number(plan.budget_estimate).toFixed(2)}</div>
+            <div class="metric"><strong>Destination</strong>${escapeHtml(plan.destination)}</div>
+          </div>
+          ${renderBudget(plan.budget_breakdown)}
+          <p><strong>Weather:</strong> ${escapeHtml(plan.weather_summary || "")}</p>
+          <p><strong>Events:</strong> ${escapeHtml(plan.events_summary || "")}</p>
+          <p><strong>Attractions:</strong> ${escapeHtml(plan.attractions_summary || "")}</p>
+          <p><strong>Ticketmaster attractions:</strong> ${escapeHtml(plan.ticketmaster_attractions_summary || "")}</p>
+          <p><strong>Advisory:</strong> ${escapeHtml(plan.advisory_summary || "")}</p>
+          ${days}
+          <h3>Agent Trace</h3>
+          <ul class="trace">${plan.agent_trace.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          <details>
+            <summary>Raw MCP context</summary>
+            <pre>${escapeHtml(JSON.stringify(plan.raw_context, null, 2))}</pre>
+          </details>
+        `;
+      }
+
+      function calculateDays(startDate, endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const msPerDay = 24 * 60 * 60 * 1000;
+        return Math.max(1, Math.round((end - start) / msPerDay) + 1);
+      }
+
+      function renderBudget(budget) {
+        if (!budget) return "";
+        return `
+          <p>
+            <strong>Budget split:</strong>
+            Hotel $${Number(budget.hotel).toFixed(2)},
+            Food $${Number(budget.food).toFixed(2)},
+            Transport $${Number(budget.transport).toFixed(2)},
+            Activities $${Number(budget.activities).toFixed(2)},
+            Buffer $${Number(budget.buffer).toFixed(2)}
+          </p>
+        `;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+    </script>
+  </body>
+</html>
